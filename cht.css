@@ -1,0 +1,23 @@
+body {
+  /* background-color: rgb(63, 60, 60); */
+  background-color: rgb(218, 216, 216);
+}
+#header {
+  background-color: rgb(255, 255, 253);
+  /* width: 100%; */
+  vertical-align: middle;
+  height: 60px;
+  line-height: 60px;
+  padding-left: 10px;
+  font-size: 30px;
+  font-weight: bold;
+}
+#canvas_wrapper {
+  width: 1000px;
+  height: 450px;
+  /* background-color: beige; */
+  padding-top: 40px;
+}
+.myChart {
+  vertical-align: middle;
+}
