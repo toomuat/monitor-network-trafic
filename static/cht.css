@@ -6,17 +6,17 @@ body {
   background-color: rgb(255, 255, 253);
   /* width: 100%; */
   vertical-align: middle;
-  height: 60px;
-  line-height: 60px;
-  padding-left: 10px;
+  height: 80px;
+  line-height: 80px;
+  padding-left: 30px;
   font-size: 30px;
   font-weight: bold;
 }
 #canvas_wrapper {
-  width: 1000px;
-  height: 450px;
+  width: 80%;
+  height: 50%;
   /* background-color: beige; */
-  padding-top: 40px;
+  padding-top: 60px;
 }
 .myChart {
   vertical-align: middle;
