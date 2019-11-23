@@ -112,6 +112,7 @@ window.onload = function() {
 
 var socket = new WebSocket("ws://localhost:8080/send");
 var num = 0;
+var data = "";
 // var insertData = document.getElementById("insertData");
 
 socket.addEventListener("open", e => {
@@ -121,7 +122,11 @@ socket.addEventListener("open", e => {
 socket.addEventListener("message", e => {
   num = parseInt(e.data, 10);
   // console.log(typeof parseInt(e.data, 10)); // number
-  console.log(e);
+  // console.log(e);
+  data = e.data.replace(/\\"/g, '"');
+  console.log("data is " + data);
+  // data = JSON.parse(e);
+  // console.log(data);
   // var p = document.createElement("p");
   // p.innerHTML = e.data;
   // insertData.appendChild(p);
