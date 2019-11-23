@@ -1,5 +1,4 @@
 window.onload = function() {
-  // var now = moment();
   var ctx = document.getElementById("myChart").getContext("2d");
   var chart = new Chart(ctx, {
     type: "line",
@@ -93,15 +92,46 @@ window.onload = function() {
 
           onRefresh: function(chart) {
             let dataNum = chart.data.datasets.length;
-            for (let i = 0; i < dataNum; i++) {
-              chart.data.datasets[i].data.push({
-                x: Date.now(),
-                y: Math.random() * 100
-              });
-            }
+            // for (let i = 0; i < dataNum; i++) {
+            //   chart.data.datasets[i].data.push({
+            //     x: Date.now(),
+            //     y: Math.random() * 100
+            //   });
+            // }
+            console.log(num);
+            chart.data.datasets[0].data.push({
+              x: Date.now(),
+              y: num
+            });
           }
         }
       }
     }
   });
 };
+
+var socket = new WebSocket("ws://localhost:8080/send");
+var num = 0;
+// var insertData = document.getElementById("insertData");
+
+socket.addEventListener("open", e => {
+  console.log("websocket connected");
+});
+
+socket.addEventListener("message", e => {
+  num = parseInt(e.data, 10);
+  // console.log(typeof parseInt(e.data, 10)); // number
+  console.log(e);
+  // var p = document.createElement("p");
+  // p.innerHTML = e.data;
+  // insertData.appendChild(p);
+});
+
+socket.addEventListener("close", () => {
+  console.log("websocket closed");
+  num = 0;
+});
+
+socket.addEventListener("error", e => {
+  console.log("websocket error : ", e);
+});
