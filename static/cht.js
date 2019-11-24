@@ -85,24 +85,29 @@ window.onload = function() {
       plugins: {
         streaming: {
           duration: 50000,
-          refresh: 1000,
+          refresh: 1500,
           delay: 1000,
           frameRate: 30,
           pause: false,
 
           onRefresh: function(chart) {
-            let dataNum = chart.data.datasets.length;
+            // let dataNum = chart.data.datasets.length;
             // for (let i = 0; i < dataNum; i++) {
             //   chart.data.datasets[i].data.push({
             //     x: Date.now(),
             //     y: Math.random() * 100
             //   });
             // }
-            console.log(num);
-            chart.data.datasets[0].data.push({
-              x: Date.now(),
-              y: num
-            });
+
+            var i = 0;
+            for (let os in counters) {
+              console.log("os: " + os + ", counter: " + counters[os]);
+              chart.data.datasets[i].data.push({
+                x: Date.now(),
+                y: counters[os]
+              });
+              i++;
+            }
           }
         }
       }
@@ -112,29 +117,50 @@ window.onload = function() {
 
 var socket = new WebSocket("ws://localhost:8080/send");
 var num = 0;
-var data = "";
-// var insertData = document.getElementById("insertData");
+var data;
+var jsonData;
+var os;
+var counters = {
+  Android: 0,
+  iOS: 0,
+  Windows: 0
+};
 
 socket.addEventListener("open", e => {
   console.log("websocket connected");
 });
 
 socket.addEventListener("message", e => {
-  num = parseInt(e.data, 10);
+  // num = parseInt(e.data, 10);
   // console.log(typeof parseInt(e.data, 10)); // number
   // console.log(e);
-  data = e.data.replace(/\\"/g, '"');
-  console.log("data is " + data);
-  // data = JSON.parse(e);
-  // console.log(data);
-  // var p = document.createElement("p");
-  // p.innerHTML = e.data;
-  // insertData.appendChild(p);
+
+  // data = e.data.replace(/\\"/g, '"');
+  // console.log(e.data);
+
+  // jsonData = JSON.parse(e.data);
+  data = e.data;
+  jsonData = eval(JSON.parse(data)); // string to object
+  console.log(jsonData);
+
+  console.log(jsonData.length);
+  console.log(typeof jsonData);
+
+  for (let i in jsonData) {
+    // console.log(os);
+    // console.log(os + ": " + data[os].Counter);
+    // console.log("i: " + i);
+    os = jsonData[i].os;
+    counters[os] = jsonData[i].counter;
+    // console.log("os: " + os + ", counter: " + counters[os]);
+  }
 });
 
 socket.addEventListener("close", () => {
   console.log("websocket closed");
-  num = 0;
+  for (var key in counters) {
+    counters[key] = 0;
+  }
 });
 
 socket.addEventListener("error", e => {

@@ -28,27 +28,11 @@ var windowsCounter int = 0
 var messagesMap map[string]*Message = map[string]*Message{
 	"Windows": &Message{"Windows", 0},
 	"Android": &Message{"Android", 0},
-	"iPhone":  &Message{"iPhone", 0},
+	"iOS":     &Message{"iOS", 0},
 }
 var messages []Message
 
 func main() {
-	// rand.Seed(time.Now().UnixNano())
-	// for key, msg := range messagesMap {
-	// 	randNum = rand.Intn(100)
-	// 	messagesMap[key].Counter = uint64(randNum)
-	// 	fmt.Printf("%v: {%v, %v}\n", key, (*msg).Counter, (*msg).Os)
-	// 	// fmt.Printf("%v: {%v, %v}\n", key, msg.Counter, msg.Os) // ok
-	// 	messages = append(messages, *msg)
-	// }
-	// fmt.Printf("%v\n", messages)
-	// jsonBytes, err := json.Marshal(messages)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// jsonStr := string(jsonBytes)
-	// fmt.Printf("%v\n", jsonStr)
-
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
 	http.HandleFunc("/send", exchangeData)
@@ -66,31 +50,20 @@ func exchangeData(w http.ResponseWriter, r *http.Request) {
 	rand.Seed(time.Now().UnixNano())
 
 	for {
-		// for i := 0; i < 3; i++ {
-		// 	randNum = rand.Intn(100)
-		// }
-
-		// for key, msg := range messagesMap {
-		// 	randNum = rand.Intn(100)
-		// 	messagesMap[key].Counter = uint64(randNum)
-		// 	fmt.Printf("%v: %v\n", key, msg.Counter)
-		// }
-		// clear slice
-		messages = messages[:0]
+		messages = messages[:0] // clear slice
 		for key, msg := range messagesMap {
-			randNum = rand.Intn(100)
+			randNum = rand.Intn(100) // (0,100]
 			messagesMap[key].Counter = uint64(randNum)
 			// fmt.Printf("%v: {%v, %v}\n", key, (*msg).Counter, (*msg).Os)
 			// fmt.Printf("%v: {%v, %v}\n", key, msg.Counter, msg.Os) // ok
 			messages = append(messages, *msg)
 		}
-		// fmt.Printf("%v\n", messages)
+
 		jsonBytes, err := json.Marshal(messages)
 		if err != nil {
 			log.Fatal(err)
 		}
 		jsonStr := string(jsonBytes)
-		// fmt.Printf("%v\n", jsonStr)
 
 		// numString = strconv.FormatUint(uint64(randNum), 10)
 		// fmt.Printf("%v\n", numString)
