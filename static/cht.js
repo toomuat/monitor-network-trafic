@@ -91,17 +91,9 @@ window.onload = function() {
           pause: false,
 
           onRefresh: function(chart) {
-            // let dataNum = chart.data.datasets.length;
-            // for (let i = 0; i < dataNum; i++) {
-            //   chart.data.datasets[i].data.push({
-            //     x: Date.now(),
-            //     y: Math.random() * 100
-            //   });
-            // }
-
-            var i = 0;
+            let i = 0;
             for (let os in counters) {
-              console.log("os: " + os + ", counter: " + counters[os]);
+              // console.log("os: " + os + ", counter: " + counters[os]);
               chart.data.datasets[i].data.push({
                 x: Date.now(),
                 y: counters[os]
@@ -131,28 +123,16 @@ socket.addEventListener("open", e => {
 });
 
 socket.addEventListener("message", e => {
-  // num = parseInt(e.data, 10);
-  // console.log(typeof parseInt(e.data, 10)); // number
-  // console.log(e);
-
-  // data = e.data.replace(/\\"/g, '"');
-  // console.log(e.data);
-
-  // jsonData = JSON.parse(e.data);
   data = e.data;
   jsonData = eval(JSON.parse(data)); // string to object
-  console.log(jsonData);
+  // console.log(jsonData);
 
-  console.log(jsonData.length);
-  console.log(typeof jsonData);
+  // console.log(jsonData.length);
+  // console.log(typeof jsonData);
 
   for (let i in jsonData) {
-    // console.log(os);
-    // console.log(os + ": " + data[os].Counter);
-    // console.log("i: " + i);
     os = jsonData[i].os;
     counters[os] = jsonData[i].counter;
-    // console.log("os: " + os + ", counter: " + counters[os]);
   }
 });
 

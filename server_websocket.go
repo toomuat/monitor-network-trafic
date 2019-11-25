@@ -10,27 +10,32 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Message struct {
-	Os      string `json:"os"`
-	Counter uint64 `json:"counter"`
-}
+// type Message struct {
+// 	Os      string `json:"os"`
+// 	Counter uint64 `json:"counter"`
+// }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-var randNum int
-var numString string
-var byteData []byte
-var iphoneCounter int = 0
-var androidCounter int = 0
-var windowsCounter int = 0
-var messagesMap map[string]*Message = map[string]*Message{
-	"Windows": &Message{"Windows", 0},
-	"Android": &Message{"Android", 0},
-	"iOS":     &Message{"iOS", 0},
-}
-var messages []Message
+var (
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+
+	randNum int
+
+	// numString string
+	// byteData  []byte
+	// iphoneCounter  int = 0
+	// androidCounter int = 0
+	// windowsCounter int = 0
+
+	// messagesMap map[string]*Message = map[string]*Message{
+	// 	"Windows": &Message{"Windows", 0},
+	// 	"Android": &Message{"Android", 0},
+	// 	"iOS":     &Message{"iOS", 0},
+	// }
+	// messages []Message
+)
 
 func main() {
 	http.Handle("/", http.FileServer(http.Dir("./static")))
@@ -54,8 +59,6 @@ func exchangeData(w http.ResponseWriter, r *http.Request) {
 		for key, msg := range messagesMap {
 			randNum = rand.Intn(100) // (0,100]
 			messagesMap[key].Counter = uint64(randNum)
-			// fmt.Printf("%v: {%v, %v}\n", key, (*msg).Counter, (*msg).Os)
-			// fmt.Printf("%v: {%v, %v}\n", key, msg.Counter, msg.Os) // ok
 			messages = append(messages, *msg)
 		}
 
@@ -65,10 +68,6 @@ func exchangeData(w http.ResponseWriter, r *http.Request) {
 		}
 		jsonStr := string(jsonBytes)
 
-		// numString = strconv.FormatUint(uint64(randNum), 10)
-		// fmt.Printf("%v\n", numString)
-		// byteData = []byte(numString)
-		// upgrade.WriteMessage(websocket.TextMessage, byteData)
 		upgrade.WriteJSON(jsonStr)
 		time.Sleep(1 * time.Second)
 	}
