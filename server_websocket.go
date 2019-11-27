@@ -6,41 +6,19 @@ import (
 	"math/rand"
 	"net/http"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
-// type Message struct {
-// 	Os      string `json:"os"`
-// 	Counter uint64 `json:"counter"`
-// }
-
-var (
-	upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
-
-	randNum int
-
-	// numString string
-	// byteData  []byte
-	// iphoneCounter  int = 0
-	// androidCounter int = 0
-	// windowsCounter int = 0
-
-	// messagesMap map[string]*Message = map[string]*Message{
-	// 	"Windows": &Message{"Windows", 0},
-	// 	"Android": &Message{"Android", 0},
-	// 	"iOS":     &Message{"iOS", 0},
-	// }
-	// messages []Message
-)
+var randNum int
 
 func main() {
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
 	http.HandleFunc("/send", exchangeData)
+
+	// only work on linux
+	// go func(){
+	// 	capturePacket()
+	// }()
 
 	log.Printf("Start HTTP server on localhost:8080")
 
