@@ -9,8 +9,12 @@ body {
   height: 80px;
   line-height: 80px;
   padding-left: 30px;
-  font-size: 30px;
+  /* font-size: 30px; */
   font-weight: bold;
+}
+#header p {
+  /* font-size: 1.5rem; */
+  font-size: 3vh;
 }
 #canvas_wrapper {
   width: 80%;

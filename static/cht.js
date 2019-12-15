@@ -76,6 +76,7 @@ window.onload = function() {
       legend: {
         display: true,
         position: "right",
+        // position: "top",
         lables: {
           boxWidth: 40,
           padding: 10,
@@ -107,7 +108,10 @@ window.onload = function() {
   });
 };
 
+// change ip address of the server depending on the environment
 var socket = new WebSocket("ws://localhost:8080/send");
+// var socket = new WebSocket("ws://192.168.99.99:8080/send");
+
 var num = 0;
 var data;
 var jsonData;
@@ -125,10 +129,6 @@ socket.addEventListener("open", e => {
 socket.addEventListener("message", e => {
   data = e.data;
   jsonData = eval(JSON.parse(data)); // string to object
-  // console.log(jsonData);
-
-  // console.log(jsonData.length);
-  // console.log(typeof jsonData);
 
   for (let i in jsonData) {
     os = jsonData[i].os;

@@ -1,52 +1,37 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"time"
+	"os"
+	"path/filepath"
 )
 
-var randNum int
-
 func main() {
+	if len(os.Args) != 2 {
+		fmt.Printf("Usage: %s <interface>\n", filepath.Base(os.Args[0]))
+		return
+	}
+
+	// create file to save log of the computer commected to the network
+	fd, err := os.Create("srcMac-OS.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer fd.Close()
+	log.Printf("Create file to save log of Src MAC Address and OS of the computer commected to the network")
+
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
-	http.HandleFunc("/send", exchangeData)
+	http.HandleFunc("/send", sendCounter)
 
-	// only work on linux
-	// go func(){
-	// 	capturePacket()
-	// }()
+	go capturePacket(os.Args[1], fd)
 
 	log.Printf("Start HTTP server on localhost:8080")
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic(err)
-	}
-}
-
-func exchangeData(w http.ResponseWriter, r *http.Request) {
-	upgrade, _ := upgrader.Upgrade(w, r, nil)
-
-	rand.Seed(time.Now().UnixNano())
-
-	for {
-		messages = messages[:0] // clear slice
-		for key, msg := range messagesMap {
-			randNum = rand.Intn(100) // (0,100]
-			messagesMap[key].Counter = uint64(randNum)
-			messages = append(messages, *msg)
-		}
-
-		jsonBytes, err := json.Marshal(messages)
-		if err != nil {
-			log.Fatal(err)
-		}
-		jsonStr := string(jsonBytes)
-
-		upgrade.WriteJSON(jsonStr)
-		time.Sleep(1 * time.Second)
 	}
 }

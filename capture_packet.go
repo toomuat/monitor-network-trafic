@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -20,34 +21,18 @@ type Message struct {
 }
 
 var (
-	upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
-
 	windowsCounter uint64
 	androidCounter uint64
 	iosCounter     uint64
 
-	messagesMap = map[string]*Message{
-		"Windows": &Message{"Windows", 0},
-		"Android": &Message{"Android", 0},
-		"iOS":     &Message{"iOS", 0},
-	}
-	messages  []Message
-	messages2 = []*Message{
-		&Message{"Windows", 0},
-		&Message{"Android", 0},
-		&Message{"iOS", 0},
-	}
+	messages [3]Message
 
 	// ethOS map[net.HardwareAddr]string
-	ethOS map[string]string
+	ethOS map[string]string = map[string]string{}
 
 	// variable for packet capture
-	eth         string = "eth1"
-	snapshotLen int32  = 1024
-	promiscuous bool   = true
+	snapshotLen int32 = 1024
+	promiscuous bool  = true
 	err         error
 	timeout     time.Duration = 30 * time.Second
 	handle      *pcap.Handle
@@ -62,29 +47,25 @@ var (
 	srcMac  string
 	os_name []string
 	host_os string
-
-	// matchWindows = regexp.MustCompile(`MSFT`)
-	// matchAndroid = regext.MustCompile(`android`)
-	// matchiOS = regext.MustCompile(`iPhone`)
 )
 
 func sendCounter(w http.ResponseWriter, r *http.Request) {
+	var upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+
 	upgrade, _ := upgrader.Upgrade(w, r, nil)
 
-	// this could be deleted
-	// go func() {
-	// for {
-	// count packet of each OS
-	// time.Sleep(1 * time.Microsecond)
-	// }
-	// 	capturePacket()
-	// }()
+	messages[0].Os = "Windows"
+	messages[1].Os = "Android"
+	messages[2].Os = "iOS"
 
 	for {
 		// send number of packet every 1 second
 		time.Sleep(1 * time.Second)
 
-		messages = messages[:0] // clear slice
+		// messages = messages[:0] // clear slice
 		messages[0].Counter = windowsCounter
 		messages[1].Counter = androidCounter
 		messages[2].Counter = iosCounter
@@ -103,15 +84,10 @@ func sendCounter(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func packetCounter() {
-	for {
-		// count packet of each OS
-		time.Sleep(1 * time.Microsecond)
-	}
-}
+func capturePacket(device string, fd *os.File) {
+	log.Printf("Start capturing packets")
 
-func capturePacket() {
-	handle, err = pcap.OpenLive(eth, snapshotLen, promiscuous, timeout)
+	handle, err = pcap.OpenLive(device, snapshotLen, promiscuous, timeout)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -120,11 +96,11 @@ func capturePacket() {
 	packets := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packets.Packets() {
 		// fmt.Println(packet)
-		countPacket(packet)
+		countPacket(packet, fd)
 	}
 }
 
-func countPacket(packet gopacket.Packet) {
+func countPacket(packet gopacket.Packet, fd *os.File) {
 	ethernetLayer = packet.Layer(layers.LayerTypeEthernet)
 	if ethernetLayer == nil {
 		return
@@ -149,22 +125,22 @@ func countPacket(packet gopacket.Packet) {
 			return
 		}
 		dhcpPacket, _ = dhcpLayer.(*layers.DHCPv4)
-		dhcpFingerprinting(srcMac, dhcpPacket)
-		fmt.Println(dhcpLayer)
+		dhcpFingerprinting(srcMac, dhcpPacket, fd)
 	}
 }
 
-func dhcpFingerprinting(srcMac string, dhcpPacket *layers.DHCPv4) {
-	fmt.Println("Operation: ", dhcpPacket.Operation)
-	fmt.Println("Options: ")
+func dhcpFingerprinting(srcMac string, dhcpPacket *layers.DHCPv4, fd *os.File) {
 	os_name = os_name[:0]
 	for _, option := range dhcpPacket.Options {
-		fmt.Println(option.String())
 		if option.Type == layers.DHCPOptHostname {
 			os_name = append(os_name, string(option.Data))
 		} else if option.Type == layers.DHCPOptClassID {
 			os_name = append(os_name, string(option.Data))
 		}
+	}
+
+	if len(os_name) == 0 {
+		return
 	}
 
 	for _, os := range os_name {
@@ -175,10 +151,23 @@ func dhcpFingerprinting(srcMac string, dhcpPacket *layers.DHCPv4) {
 			host_os = "Android"
 		case strings.Contains(os, "iPhone"):
 			host_os = "iOS"
-		default:
-			fmt.Println("nothing matched")
+		case strings.Contains(os, "iphone"):
+			host_os = "iOS"
+		case strings.Contains(os, "MBP"):
+			host_os = "OSX"
 		}
 	}
 
-	ethOS[host_os] = srcMac
+	if len(host_os) == 0 {
+		return
+	}
+
+	fmt.Println("os_name: ", os_name)
+	fmt.Printf("---- srcMac: [%s], os: [%s] ----\n", string(srcMac), host_os)
+	ethOS[string(srcMac)] = host_os
+
+	// write log to file
+	str := fmt.Sprintf("srcMac: [%s], os: [%s]\n", string(srcMac), host_os)
+	fd.WriteString(str)
+	host_os = ""
 }
