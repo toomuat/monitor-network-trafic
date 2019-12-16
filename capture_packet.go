@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Message : packet counter of each OS
 type Message struct {
 	Os      string `json:"os"`
 	Counter uint64 `json:"counter"`
@@ -25,7 +26,11 @@ var (
 	androidCounter uint64
 	iosCounter     uint64
 
-	messages [3]Message
+	messages = []Message{
+		{Os: "Windows"},
+		{Os: "Android"},
+		{Os: "iOS"},
+	}
 
 	// ethOS map[net.HardwareAddr]string
 	ethOS map[string]string = map[string]string{}
@@ -45,11 +50,18 @@ var (
 	dhcpPacket     *layers.DHCPv4
 
 	srcMac  string
-	os_name []string
-	host_os string
+	osName []string
+	hostOS string
+
+	sendNum uint64
+	clientNum uint64
 )
 
 func sendCounter(w http.ResponseWriter, r *http.Request) {
+	clientNum++
+	fmt.Printf("new client [%d] participated\n", clientNum)
+	// client_id := clientNum
+
 	var upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -57,15 +69,14 @@ func sendCounter(w http.ResponseWriter, r *http.Request) {
 
 	upgrade, _ := upgrader.Upgrade(w, r, nil)
 
-	messages[0].Os = "Windows"
-	messages[1].Os = "Android"
-	messages[2].Os = "iOS"
+	// messages[0].Os = "Windows"
+	// messages[1].Os = "Android"
+	// messages[2].Os = "iOS"
 
 	for {
 		// send number of packet every 1 second
 		time.Sleep(1 * time.Second)
 
-		// messages = messages[:0] // clear slice
 		messages[0].Counter = windowsCounter
 		messages[1].Counter = androidCounter
 		messages[2].Counter = iosCounter
@@ -74,13 +85,21 @@ func sendCounter(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		jsonStr := string(jsonBytes)
+		// jsonStr := string(jsonBytes)
 
-		upgrade.WriteJSON(jsonStr)
+		upgrade.WriteJSON(string(jsonBytes))
+		sendNum++
 
-		iosCounter = 0
-		androidCounter = 0
-		windowsCounter = 0
+		// fmt.Println(client_id)
+
+		// need to be initialized if send to the all clients
+		if sendNum == clientNum{
+			iosCounter = 0
+			androidCounter = 0
+			windowsCounter = 0
+			sendNum = 0
+			// fmt.Println("send to the all clients")
+		}
 	}
 }
 
@@ -130,44 +149,44 @@ func countPacket(packet gopacket.Packet, fd *os.File) {
 }
 
 func dhcpFingerprinting(srcMac string, dhcpPacket *layers.DHCPv4, fd *os.File) {
-	os_name = os_name[:0]
+	osName = osName[:0]
 	for _, option := range dhcpPacket.Options {
 		if option.Type == layers.DHCPOptHostname {
-			os_name = append(os_name, string(option.Data))
+			osName = append(osName, string(option.Data))
 		} else if option.Type == layers.DHCPOptClassID {
-			os_name = append(os_name, string(option.Data))
+			osName = append(osName, string(option.Data))
 		}
 	}
 
-	if len(os_name) == 0 {
+	if len(osName) == 0 {
 		return
 	}
 
-	for _, os := range os_name {
+	for _, os := range osName {
 		switch {
 		case strings.Contains(os, "MSFT"):
-			host_os = "Windows"
+			hostOS = "Windows"
 		case strings.Contains(os, "android"):
-			host_os = "Android"
+			hostOS = "Android"
 		case strings.Contains(os, "iPhone"):
-			host_os = "iOS"
+			hostOS = "iOS"
 		case strings.Contains(os, "iphone"):
-			host_os = "iOS"
+			hostOS = "iOS"
 		case strings.Contains(os, "MBP"):
-			host_os = "OSX"
+			hostOS = "OSX"
 		}
 	}
 
-	if len(host_os) == 0 {
+	if len(hostOS) == 0 {
 		return
 	}
 
-	fmt.Println("os_name: ", os_name)
-	fmt.Printf("---- srcMac: [%s], os: [%s] ----\n", string(srcMac), host_os)
-	ethOS[string(srcMac)] = host_os
+	fmt.Println("osName: ", osName)
+	fmt.Printf("---- srcMac: [%s], os: [%s] ----\n", string(srcMac), hostOS)
+	ethOS[string(srcMac)] = hostOS
 
 	// write log to file
-	str := fmt.Sprintf("srcMac: [%s], os: [%s]\n", string(srcMac), host_os)
+	str := fmt.Sprintf("srcMac: [%s], os: [%s]\n", string(srcMac), hostOS)
 	fd.WriteString(str)
-	host_os = ""
+	hostOS = ""
 }
