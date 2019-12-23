@@ -25,13 +25,15 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
-	http.HandleFunc("/send", handleWS)
+	hub := newHub()
+	http.Handle("/send", hub)
 
 	go capturePacket(os.Args[1], fd)
+	go hub.run()
 
 	log.Printf("Start HTTP server on localhost:8080")
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
-		panic(err)
+		log.Fatal("ListenAndServe: ", err)
 	}
 }

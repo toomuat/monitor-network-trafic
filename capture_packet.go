@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -12,30 +10,12 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
-	"github.com/gorilla/websocket"
 )
 
-// Message : packet counter of each OS
-type Message struct {
-	Os      string `json:"os"`
-	Counter uint64 `json:"counter"`
-}
-
 var (
-	upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
-
 	windowsCounter uint64
 	androidCounter uint64
 	iosCounter     uint64
-
-	messages = []Message{
-		{Os: "Windows"},
-		{Os: "Android"},
-		{Os: "iOS"},
-	}
 
 	// ethOS map[net.HardwareAddr]string
 	ethOS map[string]string = map[string]string{}
@@ -57,57 +37,7 @@ var (
 	srcMac string
 	osName []string
 	hostOS string
-
-	sendNum   uint64
-	clientNum uint64
 )
-
-func handleWS(w http.ResponseWriter, r *http.Request) {
-	clientNum++
-	fmt.Printf("new client [%d] joined\n", clientNum)
-	clientId := clientNum
-
-	// cannot detect leave of client
-	// right now, this function keep working even if I close tab of blowser
-	// following defer program doesn't work
-	defer func() {
-		fmt.Printf("client [%d] left\n", clientNum)
-		clientNum--
-	}()
-
-	upgrade, _ := upgrader.Upgrade(w, r, nil)
-
-	sendCounter(upgrade, clientId)
-}
-
-func sendCounter(upgrade *websocket.Conn, clientId uint64) {
-	for {
-		// send number of packet every 1 second
-		time.Sleep(1 * time.Second)
-
-		messages[0].Counter = windowsCounter
-		messages[1].Counter = androidCounter
-		messages[2].Counter = iosCounter
-
-		jsonBytes, err := json.Marshal(messages)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(clientId)
-
-		upgrade.WriteJSON(string(jsonBytes))
-		sendNum++
-
-		// need to be initialized if send to the all clients
-		if sendNum == clientNum {
-			iosCounter = 0
-			androidCounter = 0
-			windowsCounter = 0
-			sendNum = 0
-		}
-	}
-}
 
 func capturePacket(device string, fd *os.File) {
 	log.Printf("Start capturing packets")
