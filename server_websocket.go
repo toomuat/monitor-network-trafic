@@ -25,7 +25,7 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
-	http.HandleFunc("/send", sendCounter)
+	http.HandleFunc("/send", handleWS)
 
 	go capturePacket(os.Args[1], fd)
 

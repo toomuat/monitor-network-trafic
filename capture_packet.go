@@ -22,6 +22,11 @@ type Message struct {
 }
 
 var (
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+
 	windowsCounter uint64
 	androidCounter uint64
 	iosCounter     uint64
@@ -49,30 +54,33 @@ var (
 	ipPacket       *layers.IPv4
 	dhcpPacket     *layers.DHCPv4
 
-	srcMac  string
+	srcMac string
 	osName []string
 	hostOS string
 
-	sendNum uint64
+	sendNum   uint64
 	clientNum uint64
 )
 
-func sendCounter(w http.ResponseWriter, r *http.Request) {
+func handleWS(w http.ResponseWriter, r *http.Request) {
 	clientNum++
-	fmt.Printf("new client [%d] participated\n", clientNum)
-	// client_id := clientNum
+	fmt.Printf("new client [%d] joined\n", clientNum)
+	clientId := clientNum
 
-	var upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
+	// cannot detect leave of client
+	// right now, this function keep working even if I close tab of blowser
+	// following defer program doesn't work
+	defer func() {
+		fmt.Printf("client [%d] left\n", clientNum)
+		clientNum--
+	}()
 
 	upgrade, _ := upgrader.Upgrade(w, r, nil)
 
-	// messages[0].Os = "Windows"
-	// messages[1].Os = "Android"
-	// messages[2].Os = "iOS"
+	sendCounter(upgrade, clientId)
+}
 
+func sendCounter(upgrade *websocket.Conn, clientId uint64) {
 	for {
 		// send number of packet every 1 second
 		time.Sleep(1 * time.Second)
@@ -85,20 +93,18 @@ func sendCounter(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		// jsonStr := string(jsonBytes)
+
+		fmt.Println(clientId)
 
 		upgrade.WriteJSON(string(jsonBytes))
 		sendNum++
 
-		// fmt.Println(client_id)
-
 		// need to be initialized if send to the all clients
-		if sendNum == clientNum{
+		if sendNum == clientNum {
 			iosCounter = 0
 			androidCounter = 0
 			windowsCounter = 0
 			sendNum = 0
-			// fmt.Println("send to the all clients")
 		}
 	}
 }
@@ -114,7 +120,6 @@ func capturePacket(device string, fd *os.File) {
 
 	packets := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packets.Packets() {
-		// fmt.Println(packet)
 		countPacket(packet, fd)
 	}
 }
