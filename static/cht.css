@@ -21,7 +21,54 @@ body {
   height: 50%;
   /* background-color: beige; */
   padding-top: 60px;
+  margin-left: 30px;
 }
 .myChart {
+  /* width: 70%; */
   vertical-align: middle;
+}
+/* #wrap {
+  padding-bottom: 40px;
+  margin-bottom: 40px;
+  border-bottom: 2px solid rgb(175, 170, 170);
+} */
+#description {
+  width: 80%;
+  margin: 30px auto;
+  padding-top: 30px;
+  border-top: 2px solid rgb(175, 170, 170);
+  font-family: "游ゴシック Medium", YuGothic, YuGothicM,
+    "Hiragino Kaku Gothic ProN", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo,
+    sans-serif;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+}
+#description p {
+  margin-bottom: 10px;
+}
+#description img {
+  margin: 15px 0;
+  /* prevent image from sticking out of screen */
+  max-width: 100%;
+}
+#refer {
+  padding-top: 30px;
+  border-top: 2px solid rgb(175, 170, 170);
+}
+/* #refer ol {
+  list-style: disc;
+} */
+ol#refer {
+  padding: 0 0 0 2em;
+  margin: 0;
+}
+
+ol li {
+  list-style-type: none;
+  list-style-position: inside;
+  counter-increment: cnt;
+}
+ol li:before {
+  display: marker;
+  content: "[" counter(cnt) "] ";
 }
