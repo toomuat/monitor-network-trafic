@@ -1,6 +1,7 @@
 body {
   /* background-color: rgb(63, 60, 60); */
   background-color: rgb(218, 216, 216);
+  height: 100%;
 }
 #header {
   background-color: rgb(255, 255, 253);
@@ -16,6 +17,13 @@ body {
   /* font-size: 1.5rem; */
   font-size: 3vh;
 }
+#monitor_desc {
+  width: 80%;
+  font-weight: bold;
+  font-size: 20px;
+  margin-left: 60px;
+  margin-top: 60px;
+}
 #canvas_wrapper {
   width: 80%;
   height: 50%;
@@ -27,13 +35,8 @@ body {
   /* width: 70%; */
   vertical-align: middle;
 }
-/* #wrap {
-  padding-bottom: 40px;
-  margin-bottom: 40px;
-  border-bottom: 2px solid rgb(175, 170, 170);
-} */
 #description {
-  width: 80%;
+  width: 50%;
   margin: 30px auto;
   padding-top: 30px;
   border-top: 2px solid rgb(175, 170, 170);
@@ -43,17 +46,23 @@ body {
   line-height: 1.5;
   letter-spacing: 0.1em;
 }
+/* #description {
+  width: 90%;
+  font-size: 15px;
+} */
 #description p {
   margin-bottom: 10px;
 }
 #description img {
-  margin: 15px 0;
+  margin: 35px 0;
   /* prevent image from sticking out of screen */
   max-width: 100%;
 }
 #refer {
   padding-top: 30px;
+  margin-top: 30px;
   border-top: 2px solid rgb(175, 170, 170);
+  word-break: break-all;
 }
 /* #refer ol {
   list-style: disc;
@@ -71,4 +80,62 @@ ol li {
 ol li:before {
   display: marker;
   content: "[" counter(cnt) "] ";
+}
+@media (max-width: 1020px) and (min-width: 768px) {
+  #description {
+    width: 80%;
+  }
+  #description img {
+    margin: 15px 0;
+    /* prevent image from sticking out of screen */
+    max-width: 100%;
+  }
+}
+@media (max-width: 767px) {
+  #description {
+    width: 90%;
+  }
+  #description img {
+    margin: 15px 0;
+    /* prevent image from sticking out of screen */
+    max-width: 100%;
+  }
+  #monitor_desc {
+    margin-left: 30px;
+    margin-top: 30px;
+  }
+  #canvas_wrapper {
+    width: 100%;
+    padding-top: 30px;
+    margin-left: 0;
+  }
+}
+
+.show {
+  opacity: 1;
+  transition: opacity 1000ms;
+}
+.hide {
+  opacity: 0;
+  transition: opacity 1000ms;
+}
+.enlarge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translateY(-50%) translateX(-50%);
+  width: 80%;
+  height: auto;
+}
+#bg-curtain {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  /* display: none; */
+  position: absolute;
+  left: 0;
+  top: 0;
 }

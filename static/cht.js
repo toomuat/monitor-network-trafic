@@ -41,16 +41,16 @@ window.onload = function() {
             type: "realtime",
             scaleLabel: {
               display: true,
-              labelString: "Time",
+              labelString: "Time"
               // fontColor: "white",
-              fontSize: 20
+              // fontSize: 20
             },
             gridLines: {
               // color: "rgba(255, 255, 255, .3)"
             },
             ticks: {
               // fontColor: "white",
-              fontSize: 14
+              // fontSize: 14
             }
           }
         ],
@@ -58,9 +58,9 @@ window.onload = function() {
           {
             scaleLabel: {
               display: true,
-              labelString: "Traffic",
+              labelString: "Traffic"
               // fontColor: "white",
-              fontSize: 20
+              // fontSize: 20
             },
             gridLines: {
               // color: "rgba(255, 255, 255, .3)",
@@ -68,7 +68,7 @@ window.onload = function() {
             },
             ticks: {
               // fontColor: "white",
-              fontSize: 14
+              // fontSize: 14
             }
           }
         ]
@@ -147,3 +147,58 @@ socket.addEventListener("close", () => {
 socket.addEventListener("error", e => {
   console.log("websocket error : ", e);
 });
+
+// modal image
+// var bgCurtain = document.getElementById("bg-curtain");
+
+// var fadeIn = (el, zIndex) => {
+//   el.classList.add("show");
+//   el.classList.remove("hide");
+//   el.style.zIndex = zIndex;
+// };
+
+// var fadeOut = (el, zIndex) => {
+//   el.classList.add("hide");
+//   el.classList.remove("show");
+//   el.style.zIndex = zIndex;
+// };
+
+// document.addEventListener(
+//   "click",
+//   function(e) {
+//     e = e || window.event;
+//     var target = e.target;
+//     if (target.tagName !== "IMG") {
+//       return;
+//     }
+//     console.log(target);
+//     fadeIn(bgCurtain, 10);
+//     fadeIn(target, 20);
+//   },
+//   false
+// );
+
+// img1.addEventListener("click", () => {
+//   console.log("click img1");
+//   fadeIn(img1LargeImg, 20);
+//   fadeIn(bgCurtain, 10);
+// });
+// img1Large.addEventListener("click", () => {
+//   fadeOut(img1LargeImg, -10);
+//   fadeOut(bgCurtain, -10);
+//   fadeIn(img1, 10);
+// });
+// bgCurtain.addEventListener("click", () => {
+//   fadeOut(img1LargeImg, -10);
+//   fadeOut(bgCurtain, -10);
+//   fadeIn(img1, 10);
+// });
+// // detect escape key clicked
+// document.onkeydown = function(evt) {
+//   evt = evt || window.event;
+//   if (evt.keyCode == 27) {
+//     fadeOut(img1LargeImg, -10);
+//     fadeOut(bgCurtain, -10);
+//     fadeIn(img1, 10);
+//   }
+// };

@@ -81,5 +81,5 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	go client.broardcastCounter()
 	go client.sendCounter()
-	go client.detectDisconnection()
+	// go client.detectDisconnection()
 }

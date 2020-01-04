@@ -14,15 +14,29 @@
         Realtime Traffic Monitor
       </p>
     </header>
+
+    <h4 id="monitor_desc">Windowsのトラフィック</h4>
+    <!-- <h4 id="monitor_desc">Windows以外のOSのトラフィック</h4> -->
     <div id="canvas_wrapper">
       <canvas id="myChart"></canvas>
     </div>
 
     <div id="description">
+      <h3 style="font-weight: bold;">TODO：</h3>
+      <h3 style="font-weight: bold;">目次</h3>
+      <h3 style="font-weight: bold;">背景</h3>
+      <h3 style="font-weight: bold;">概要</h3>
+      <h3 style="font-weight: bold;">目的</h3>
+      <h3 style="font-weight: bold;">分類</h3>
+      <h3 style="font-weight: bold;">（画像のモーダルウィンドウ）</h3>
+      <h3 style="font-weight: bold;">（D3.jsでグラフ書き直す）</h3>
+      <br />
+
       <p>
         山井班テーマ2では 「DHCP
         fingerprintingによる機種依存サービス提供システム」 の制作を行いました。
       </p>
+
       <p>
         DHCP fingerprintingはOS
         fingerprintingというOSを識別する方法の一つでありDHCPプロトコルを利用します。DHCPはコンピュータがネットワークに接続したときに他のコンピュータと通信するときに必要となるIPアドレスを取得するために利用するプロトコルです。IPアドレスを取得しようとするDHCPクライアントはDHCPサーバを発見するためにDHCP
@@ -30,12 +44,14 @@
         OFFERパケットによってDHCPサーバから提示されたIPアドレスをリクエストするためにDHCP
         REQUESTパケットを送信します。
       </p>
+      <img class="enlarge hide" src="image/DHCP.png" alt="DHCP protocol" />
       <img src="image/DHCP.png" alt="DHCP protocol" />
       <p>
         DHCPメッセージのフォーマットは次の画像のようになっており、DHCPクライアントから送信されるDHCP
         DISCOVER、
         REQUESTパケットには赤い点線で囲まれたoptionsの部分にクライアントのOSの情報が含まれるため、これを見ることでOSの識別を行うことができます。
       </p>
+      <img class="enlarge hide" src="image/DHCP-format.png" alt="DHCP format" />
       <img src="image/DHCP-format.png" alt="DHCP format" />
       <p>
         実際にiOS、Windows、Androidから送信されたDHCPメッセージをWiresharkでキャプチャしてoptions部分の内容を取り出したものは次のようになっています。DHCPメッセージのoptionsには複数のoption情報が含まれており12番と60番のオプションにOSを識別する情報が入っています。このように今回のシステム制作ではOSを識別するために12番と60番のオプションを見て簡易的にOSの識別を行っていますが、
@@ -45,10 +61,18 @@
         というツールで簡単に実行できます）
         を行うことでより精度の高いOSの識別を行うことができます。
       </p>
+      <img class="enlarge hide" src="image/" alt="DHCP message in Wireshark" />
+      <img src="image/" alt="DHCP message in Wireshark" />
+      <img
+        class="enlarge hide"
+        src="image/dhcp-wireshark.PNG"
+        alt="option of DHCP message of each OS"
+      />
       <img
         src="image/dhcp-wireshark.PNG"
         alt="option of DHCP message of each OS"
       />
+
       <p>
         OpenFlowはSDN（Software Defined Network）
         というソフトウェアでネットワークを定義する技術の一つです。
@@ -58,7 +82,13 @@
         OpenFlowスイッチでは未知のパケットを受信するとOpenFlowコントローラにPacket-Inメッセージを発行し、OpenFlowコントローラにパケットの処理方法を問い合わせます。
         そして、Packet-Outメッセージによってパケットの送信、Flow-Modメッセージによってフローエントリの更新を行います。
       </p>
+      <img
+        class="enlarge hide"
+        src="image/OpenFlow-process.png"
+        alt="process of OpenFlow"
+      />
       <img src="image/OpenFlow-process.png" alt="process of OpenFlow" />
+
       <p>
         今回のシステム制作で実際に構築したネットワークの構成は次の図のようになっています。このネットワークでは3つのラズベリーパイを利用し、それぞれDHCPサーバ、DNSサーバ、OpenFlowスイッチ、Webサーバとして利用しました。そしてスイッチングハブでOpenFlowスイッチとアクセスポイントを接続しました。<br />
         このシステムではクライアントから送信されるDHCPメッセージをOpenFlowコントローラで解析し、クライアントのMacアドレスとOSの紐付けを行います。ネットワーク内に設置したWebサーバにWindowsからのアクセスはWindows用のサーバ、それ以外のOSの場合はもう一つのサーバにアクセスを振り分けるようにフローテーブルの追加を行います。
@@ -67,25 +97,58 @@
         <a href="https://www.openvswitch.org/">Open vSwtich</a>
         、OpenFlowコントローラにはPythonで記述することのできるSDNフレームワークの
         <a href="https://osrg.github.io/ryu/">Ryu</a>
+        、WEBサーバには
+        <a href="https://httpd.apache.org/">Apache</a>
         を使用しました。
       </p>
-      <img src="image/network-diagram.png" alt="network diagram" />
+      <img
+        class="enlarge hide"
+        src="image/network-diagram.png"
+        alt="network diagram using apache"
+      />
+      <img src="image/network-diagram.png" alt="network diagram using apache" />
       <p>
-        このOSごとのネットワークのトラフィックをモニタリングするアプリケーションではOpenFlowスイッチを通過するパケットをポートミラーリングによって一つのポートに集約してOSごとのパケット数をカウントします。そして1秒毎にカウントしたOSごとのパケット数をサーバからすべてのクライアントへ送信します。すべてのクライアントへの送信を終えたらパケットのカウンタを初期化して1秒後に再び送信します。
+        次のようにDockerを利用することで1台のラズパイの中で複数台のWEBサーバを動作させる方法も試したのですが、これではHTTPヘッダのUser-Agentを見てOSを識別してOSごとに異なるレスポンスを返すことができるため、DHCP
+        fingerprintingとOpenFlowを利用したサーバ選択を行っているかわからないためDockerを利用せず1つのラズパイに1つのWEBサーバを搭載するようにしました。
+      </p>
+      <img
+        class="enlarge hide"
+        src="image/Network-Docker.png"
+        alt="network diagram using docker"
+      />
+      <img src="image/Network-Docker.png" alt="network diagram using docker" />
+
+      <p>
+        OSごとのネットワークのトラフィックをモニタリングするアプリケーション（以下MonitorApp）ではOpenFlowスイッチを通過するパケットをポートミラーリングによって一つのポートに集約してOSごとのパケット数をカウントします。そして1秒毎にカウントしたOSごとのパケット数をサーバからすべてのクライアントへ送信します。すべてのクライアントへの送信を終えたらパケットのカウンタを初期化して1秒後に再び送信します。OSの識別にはOpenFlowコントローラと同じようにDHCP
+        DISCOVER、 REQUESTパケットを発見したらDHCP
+        fingerprintingを行っています。
       </p>
       <p>
         サーバからクライアントにOSごとのトラフィックの情報を送信する方法としてはWebSocketを選択しました。
         これはステートレスな通信を行うHTTPとは異なりステートフルな通信を行うWebSocketを用いることでサーバとクライアントとの通信路を確立し、トラフィックの削減およびサーバからのメッセージの送信を簡潔に行うためです。
         ステートフルな通信のデメリットとしてスケールアウトに弱いという性質がありますが、今回の制作で作成したネットワークの規模が大きくならないことや、多くのクライアントからのアクセスもないと考えられるためスケールアウトは無視しており、サーバはクライアントの情報を保持しステートフルに通信を行いことができると考えました。
-        Ajaxによる非同期通信によってサーバからデータを取得することも考えたのですが
-        ステートフルな通信によってサーバはコネクションを確立したクライアントの情報を保持し続けるため、クライアントの増加によってサーバの負荷が大きくなるのですが今回の制作で作成したネットワークの規模が小さいことや、多くのクライアントからのアクセスもないと考えられるためステートフルな通信に耐えうると考えました。
+        ステートフルな通信によってサーバはコネクションを確立したクライアントの情報を保持し続けるため、クライアントの増加によってサーバの負荷が大きくなることからAjaxによる非同期通信によってサーバからデータを取得することも考えたのですが今回の制作で作成したネットワークの規模が小さいことや、多くのクライアントからのアクセスもないと考えられるためステートフルな通信に耐えうると考えました。
       </p>
-      <br />
+
+      <p>
+        MonitorAppでのサーバサイドのプログラミング言語にはGoを利用しました。<br />
+        大量のパケットを処理することとなることから実行速度の速い言語としてC/C++とRustなども考えたのですがシンプルで読みやすい構文や充実したライブラリ、WEBサーバ、パケットのキャプチャ、websocketによるデータの送信を同時に行うため並行処理の書きやすや、実行速度の速さなどを重視してGoを選択しました。
+        パケットのキャプチャには
+        <a href="https://github.com/google/gopacket">
+          google/gopacket
+        </a>
+        、websocketには
+        <a href="https://github.com/gorilla/websocket">
+          gorilla/websocket
+        </a>
+        を利用しました。
+      </p>
+
       <div id="refer">
         <ol>
           <li>
             Dynamic Host Configuration Protocol <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="https://tools.ietf.org/html/rfc2131">
               https://tools.ietf.org/html/rfc2131
             </a>
@@ -93,50 +156,56 @@
           <li>
             Software-Defined Networking (SDN): Layers and Architecture
             Terminology <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="https://tools.ietf.org/html/rfc7426">
               https://tools.ietf.org/html/rfc7426
             </a>
           </li>
           <li>
             The Open vSwitch Database Management Protocol <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="https://tools.ietf.org/html/rfc7047">
               https://tools.ietf.org/html/rfc7047
             </a>
           </li>
           <li>
             Open vSwitch. An Open Virtual Switch <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="http://openvswitch.org/">
               http://openvswitch.org/
             </a>
           </li>
           <li>
             The WebSocket Protocol <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="https://tools.ietf.org/html/rfc6455">
               https://tools.ietf.org/html/rfc6455
             </a>
           </li>
           <li>
             osrg/ryu <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="https://github.com/osrg/ryu">
               https://github.com/osrg/ryu
             </a>
           </li>
           <li>
+            Apache <br />
+            <a href="https://httpd.apache.org/">
+              https://httpd.apache.org/
+            </a>
+          </li>
+          <li>
             COMPONENT-BASED SOFTWARE DEFINED NETWORKING FRAMEWORKBuild SDN
             Agilely <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="https://osrg.github.io/ryu/">
               https://osrg.github.io/ryu/
             </a>
           </li>
           <li>
             Using OpenFlow 1.3 RYU SDN Framework <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
             <a href="https://osrg.github.io/ryu-book/ja/Ryubook.pdf">
               https://osrg.github.io/ryu-book/ja/Ryubook.pdf
             </a>
@@ -145,9 +214,49 @@
             かんたん！OpenFlowスタートガイド 五十嵐裕也（Ikarashi
             Hiroya）@山井研
           </li>
+          <li>
+            docker <br />
+            <a href="https://www.docker.com/">
+              https://www.docker.com/
+            </a>
+          </li>
+          <li>
+            Go <br />
+            <a href="https://golang.org/">
+              https://golang.org/
+            </a>
+          </li>
+          <li>
+            gorilla/websocket <br />
+            <a href="https://github.com/gorilla/websocket">
+              github.com/gorilla/websocket
+            </a>
+          </li>
+          <li>
+            google/gopacket <br />
+            <a href="https://github.com/google/gopacket">
+              github.com/google/gopacket
+            </a>
+          </li>
+          <li>
+            Reverse Proxy Guide <br />
+            <a
+              href="https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html"
+            >
+              https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html
+            </a>
+          </li>
+          <li>
+            Chart.js <br />
+            <a href="https://www.chartjs.org/">
+              https://www.chartjs.org/
+            </a>
+          </li>
         </ol>
       </div>
     </div>
+
+    <div id="bg-curtain" class="hide"></div>
 
     <script src="./cht.js"></script>
     <!-- <script src="http://localhost/cht.js"></script> -->

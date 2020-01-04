@@ -53,11 +53,14 @@ func (c *Client) sendCounter() {
 		case message, _ := <-c.send:
 			err := c.conn.WriteJSON(message)
 			if err != nil {
-				break
+				c.hub.unregister <- c
+				c.conn.Close()
+				return
+				// break
 			}
 		}
 	}
-	c.conn.Close()
+	// c.conn.Close()
 }
 
 func (c *Client) detectDisconnection() {

@@ -1,1 +1,4 @@
 srcMac-OS.txt
+*.exe
+*.out
+*.pdf
