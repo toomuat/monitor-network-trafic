@@ -33,35 +33,38 @@
       <br />
 
       <p>
-        山井班テーマ2では 「DHCP
-        fingerprintingによる機種依存サービス提供システム」 の制作を行いました。
+        では 「DHCP fingerprintingによる機種依存サービス提供システム」
+        の制作を行いました。
       </p>
 
       <p>
         DHCP fingerprintingはOS
-        fingerprintingというOSを識別する方法の一つでありDHCPプロトコルを利用します。DHCPはコンピュータがネットワークに接続したときに他のコンピュータと通信するときに必要となるIPアドレスを取得するために利用するプロトコルです。IPアドレスを取得しようとするDHCPクライアントはDHCPサーバを発見するためにDHCP
+        fingerprintingというOSを識別する方法の一つでありDHCPプロトコルを利用します。DHCPはコンピュータがネットワークに接続したときに
+        他のコンピュータと通信するときに必要となるIPアドレスを取得するために利用するプロトコルです。IPアドレスを取得しようとするDHCPクライアントはDHCPサーバを発見するためにDHCP
         DISCOVERパケット、DHCP
         OFFERパケットによってDHCPサーバから提示されたIPアドレスをリクエストするためにDHCP
         REQUESTパケットを送信します。
       </p>
-      <img class="enlarge hide" src="image/DHCP.png" alt="DHCP protocol" />
+      <!-- <img class="enlarge hide" src="image/DHCP.png" alt="DHCP protocol" /> -->
       <img src="image/DHCP.png" alt="DHCP protocol" />
       <p>
         DHCPメッセージのフォーマットは次の画像のようになっており、DHCPクライアントから送信されるDHCP
         DISCOVER、
         REQUESTパケットには赤い点線で囲まれたoptionsの部分にクライアントのOSの情報が含まれるため、これを見ることでOSの識別を行うことができます。
       </p>
-      <img class="enlarge hide" src="image/DHCP-format.png" alt="DHCP format" />
+      <!-- <img class="enlarge hide" src="image/DHCP-format.png" alt="DHCP format" /> -->
       <img src="image/DHCP-format.png" alt="DHCP format" />
       <p>
-        実際にiOS、Windows、Androidから送信されたDHCPメッセージをWiresharkでキャプチャしてoptions部分の内容を取り出したものは次のようになっています。DHCPメッセージのoptionsには複数のoption情報が含まれており12番と60番のオプションにOSを識別する情報が入っています。このように今回のシステム制作ではOSを識別するために12番と60番のオプションを見て簡易的にOSの識別を行っていますが、
+        実際にiOS、Windows、Androidから送信されたDHCPメッセージをWiresharkでキャプチャしてoptions部分の内容を取り出したものは次のようになっています。
+        DHCPメッセージのoptionsには複数のoption情報が含まれており12番と60番のオプションにOSを識別する情報が入っています。
+        このように今回のシステム制作ではOSを識別するために12番と60番のオプションを見て簡易的にOSの識別を行っていますが、
         これらの値は変更可能なため正確にはOSごとに異なるDHCPメッセージのオプションの番号を見ることでOSの識別を行う必要があります。
         この他にもOSごとの実装の違いによるIP、TCPヘッダのフラグの値の差異によるOSの識別
         （<a href="https://en.wikipedia.org/wiki/P0f">p0f</a>
         というツールで簡単に実行できます）
         を行うことでより精度の高いOSの識別を行うことができます。
       </p>
-      <img class="enlarge hide" src="image/" alt="DHCP message in Wireshark" />
+      <!-- <img class="enlarge hide" src="image/" alt="DHCP message in Wireshark" /> -->
       <img src="image/" alt="DHCP message in Wireshark" />
       <img
         class="enlarge hide"
@@ -82,16 +85,19 @@
         OpenFlowスイッチでは未知のパケットを受信するとOpenFlowコントローラにPacket-Inメッセージを発行し、OpenFlowコントローラにパケットの処理方法を問い合わせます。
         そして、Packet-Outメッセージによってパケットの送信、Flow-Modメッセージによってフローエントリの更新を行います。
       </p>
-      <img
+      <!-- <img
         class="enlarge hide"
         src="image/OpenFlow-process.png"
         alt="process of OpenFlow"
-      />
+      /> -->
       <img src="image/OpenFlow-process.png" alt="process of OpenFlow" />
 
       <p>
-        今回のシステム制作で実際に構築したネットワークの構成は次の図のようになっています。このネットワークでは3つのラズベリーパイを利用し、それぞれDHCPサーバ、DNSサーバ、OpenFlowスイッチ、Webサーバとして利用しました。そしてスイッチングハブでOpenFlowスイッチとアクセスポイントを接続しました。<br />
-        このシステムではクライアントから送信されるDHCPメッセージをOpenFlowコントローラで解析し、クライアントのMacアドレスとOSの紐付けを行います。ネットワーク内に設置したWebサーバにWindowsからのアクセスはWindows用のサーバ、それ以外のOSの場合はもう一つのサーバにアクセスを振り分けるようにフローテーブルの追加を行います。
+        今回のシステム制作で実際に構築したネットワークの構成は次の図のようになっています。
+        このネットワークでは3つのラズベリーパイを利用し、それぞれDHCPサーバ、DNSサーバ、OpenFlowスイッチ、Webサーバとして利用しました。
+        そしてスイッチングハブでOpenFlowスイッチとアクセスポイントを接続しました。<br />
+        このシステムではクライアントから送信されるDHCPメッセージをOpenFlowコントローラで解析し、クライアントのMacアドレスとOSの紐付けを行います。
+        ネットワーク内に設置したWebサーバにWindowsからのアクセスはWindows用のサーバ、それ以外のOSの場合はもう一つのサーバにアクセスを振り分けるようにフローテーブルの追加を行います。
         そのため、DHCPサーバ、Webサーバ、OpenFlowコントローラはクライアントからのアクセスがOpenFlowスイッチを経由するように機器を接続しました。<br />
         OpenFlowスイッチには
         <a href="https://www.openvswitch.org/">Open vSwtich</a>
@@ -101,38 +107,48 @@
         <a href="https://httpd.apache.org/">Apache</a>
         を使用しました。
       </p>
-      <img
+      <!-- <img
         class="enlarge hide"
         src="image/network-diagram.png"
         alt="network diagram using apache"
-      />
+      /> -->
       <img src="image/network-diagram.png" alt="network diagram using apache" />
       <p>
-        次のようにDockerを利用することで1台のラズパイの中で複数台のWEBサーバを動作させる方法も試したのですが、これではHTTPヘッダのUser-Agentを見てOSを識別してOSごとに異なるレスポンスを返すことができるため、DHCP
+        WEBサーバについては、次のようにDockerを利用することで1台のラズパイの中で複数台のWEBサーバを動作させる方法も試したのですが、
+        この方法ではHTTPヘッダのUser-Agentを見てOSを識別してOSごとに異なるレスポンスを返すことができるため、DHCP
         fingerprintingとOpenFlowを利用したサーバ選択を行っているかわからないためDockerを利用せず1つのラズパイに1つのWEBサーバを搭載するようにしました。
       </p>
-      <img
+      <!-- <img
         class="enlarge hide"
         src="image/Network-Docker.png"
         alt="network diagram using docker"
-      />
+      /> -->
       <img src="image/Network-Docker.png" alt="network diagram using docker" />
 
       <p>
-        OSごとのネットワークのトラフィックをモニタリングするアプリケーション（以下MonitorApp）ではOpenFlowスイッチを通過するパケットをポートミラーリングによって一つのポートに集約してOSごとのパケット数をカウントします。そして1秒毎にカウントしたOSごとのパケット数をサーバからすべてのクライアントへ送信します。すべてのクライアントへの送信を終えたらパケットのカウンタを初期化して1秒後に再び送信します。OSの識別にはOpenFlowコントローラと同じようにDHCP
-        DISCOVER、 REQUESTパケットを発見したらDHCP
-        fingerprintingを行っています。
+        OSごとのネットワークのトラフィックをモニタリングするアプリケーション（以下MonitorApp）ではOpenFlowスイッチを通過するパケットを
+        ポートミラーリングによって一つのポートに集約してOSごとのパケット数をカウントします。
+        そして1秒毎にカウントしたOSごとのパケット数をサーバからすべてのクライアントへ送信します。
+        すべてのクライアントへの送信を終えたらパケットのカウンタを初期化して1秒後に再び送信します。
+        この一連のプログラムによって1秒間にOpenFlowスイッチを通過するパケット数をOSごとにカウントします。
+        OSの識別にはOpenFlowコントローラと同じようにDHCP DISCOVER、
+        REQUESTパケットを発見したらDHCP fingerprintingを行っています。
       </p>
       <p>
         サーバからクライアントにOSごとのトラフィックの情報を送信する方法としてはWebSocketを選択しました。
-        これはステートレスな通信を行うHTTPとは異なりステートフルな通信を行うWebSocketを用いることでサーバとクライアントとの通信路を確立し、トラフィックの削減およびサーバからのメッセージの送信を簡潔に行うためです。
-        ステートフルな通信のデメリットとしてスケールアウトに弱いという性質がありますが、今回の制作で作成したネットワークの規模が大きくならないことや、多くのクライアントからのアクセスもないと考えられるためスケールアウトは無視しており、サーバはクライアントの情報を保持しステートフルに通信を行いことができると考えました。
-        ステートフルな通信によってサーバはコネクションを確立したクライアントの情報を保持し続けるため、クライアントの増加によってサーバの負荷が大きくなることからAjaxによる非同期通信によってサーバからデータを取得することも考えたのですが今回の制作で作成したネットワークの規模が小さいことや、多くのクライアントからのアクセスもないと考えられるためステートフルな通信に耐えうると考えました。
+        これはステートレスな通信を行うHTTPとは異なりステートフルな通信を行うWebSocketを用いることで
+        サーバとクライアントとのステートフルな通信路を確立し、トラフィックの削減およびサーバからのメッセージの送信を簡潔に行うためです。
+        ステートフルな通信のデメリットとしてスケールアウトに弱いという性質がありますが、今回の制作で作成したネットワークの規模が大きくならないことや、
+        多くのクライアントからのアクセスもないと考えられるためスケールアウトは無視しており、サーバはクライアントの情報を保持しステートフルに通信を行いことができると考えました。
+        また、サーバはコネクションを確立したクライアントの情報を保持し続けるため、クライアントの増加によってサーバの負荷が大きくなることから
+        Ajaxによる非同期通信によってサーバからデータを取得することも考えたのですが今回の制作で作成したネットワークの規模が小さいことや、
+        多くのクライアントからのアクセスもないと考えられるためステートフルな通信に耐えうると考えました。
       </p>
 
       <p>
         MonitorAppでのサーバサイドのプログラミング言語にはGoを利用しました。<br />
-        大量のパケットを処理することとなることから実行速度の速い言語としてC/C++とRustなども考えたのですがシンプルで読みやすい構文や充実したライブラリ、WEBサーバ、パケットのキャプチャ、websocketによるデータの送信を同時に行うため並行処理の書きやすや、実行速度の速さなどを重視してGoを選択しました。
+        大量のパケットを処理することとなることから実行速度の速い言語としてC/C++とRustなども考えたのですがシンプルで読みやすい構文や充実したライブラリや、
+        WEBサーバ、パケットのキャプチャ、websocketによるデータの送信を同時に行うため並行処理の書きやすさ、実行速度の速さなどを重視してGoを選択しました。
         パケットのキャプチャには
         <a href="https://github.com/google/gopacket">
           google/gopacket
