@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="cht.css" />
+    <title>Real Time Chart of Network Traffic</title>
+  </head>
+  <body>
+    <header id="header">
+      <p>
+        Realtime Traffic Monitor
+      </p>
+    </header>
+
+    <h4 id="monitor_desc">Windowsのトラフィック</h4>
+    <!-- <h4 id="monitor_desc">Windows以外のOSのトラフィック</h4> -->
+    <div id="canvas_wrapper">
+      <canvas id="myChart"></canvas>
+    </div>
+
+    <div id="addHTML"></div>
+
+    <script src="./Windows.js"></script>
+    <script src="./addHTML.js"></script>
+    <!-- <script src="http://localhost/cht.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/af.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+    <script src="./chartjs-plugin-streaming.min.js"></script>
+    <!-- <script src="http://localhost/chartjs-plugin-streaming.min.js"></script> -->
+  </body>
+</html>
