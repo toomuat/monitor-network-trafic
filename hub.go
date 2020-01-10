@@ -64,6 +64,7 @@ func (h *Hub) run() {
 }
 
 func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	upgrader.CheckOrigin = func(r *http.Request) bool {return true}
 	upgrade, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)

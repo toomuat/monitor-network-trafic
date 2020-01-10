@@ -114,9 +114,9 @@ window.onload = function() {
 };
 
 // change ip address of the server depending on the environment
-var socket = new WebSocket("ws://localhost:8080/send");
+// var socket = new WebSocket("ws://localhost:8080/send");
 // var socket = new WebSocket("ws://localhost/send");
-// var socket = new WebSocket("ws://192.168.99.99:8080/send");
+var socket = new WebSocket("ws://192.168.99.99:8080/send");
 
 var num = 0;
 var data;
