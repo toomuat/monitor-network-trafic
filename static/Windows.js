@@ -5,15 +5,15 @@ window.onload = function() {
     data: {
       // label: ["Windows"],
       datasets: [
-        // {
-        //   label: "Android",
-        //   type: "line",
-        //   data: [],
-        //   borderColor: "rgba(245, 146, 146, 0.9)",
-        //   backgroundColor: "rgba(245, 146, 146, 0.9)",
-        //   // backgroundColor: "rgba(218, 216, 216, 0)",
-        //   fill: false
-        // },
+        {
+          label: "Android",
+          type: "line",
+          data: [],
+          borderColor: "rgba(245, 146, 146, 0.9)",
+          backgroundColor: "rgba(245, 146, 146, 0.9)",
+          // backgroundColor: "rgba(218, 216, 216, 0)",
+          fill: false
+        },
         // {
         //   label: "iOS",
         //   type: "line",
@@ -92,20 +92,20 @@ window.onload = function() {
           pause: false,
 
           onRefresh: function(chart) {
-            // let i = 0;
-            // for (let os in counters) {
-            //   // console.log("os: " + os + ", counter: " + counters[os]);
-            //   chart.data.datasets[i].data.push({
-            //     x: Date.now(),
-            //     y: counters[os]
-            //   });
-            //   i++;
-            // }
+            let i = 0;
+            for (let os in counters) {
+              // console.log("os: " + os + ", counter: " + counters[os]);
+              chart.data.datasets[i].data.push({
+                x: Date.now(),
+                y: counters[os]
+              });
+              i++;
+            }
 
-            chart.data.datasets[0].data.push({
-              x: Date.now(),
-              y: counters["Windows"]
-            });
+            // chart.data.datasets[0].data.push({
+            //   x: Date.now(),
+            //   y: counters["Windows"]
+            // });
           }
         }
       }
@@ -116,7 +116,7 @@ window.onload = function() {
 // change ip address of the server depending on the environment
 // var socket = new WebSocket("ws://localhost:8080/send");
 // var socket = new WebSocket("ws://localhost/send");
-var socket = new WebSocket("ws://192.168.99.99:8080/send");
+var socket = new WebSocket("ws://192.168.11.195:8080/send");
 
 var num = 0;
 var data;
@@ -140,6 +140,7 @@ socket.addEventListener("message", e => {
     os = jsonData[i].os;
     counters[os] = jsonData[i].counter;
   }
+  delete counters.iOS;
 });
 
 socket.addEventListener("close", () => {
